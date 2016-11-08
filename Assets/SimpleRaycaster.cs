@@ -9,8 +9,11 @@ public class SimpleRaycaster : MonoBehaviour {
     //public float lastDistance;
 
     void OnDrawGizmos() {
-        Gizmos.color = new Color((GetDistance() / length), 1.0f - (GetDistance() / length), 0.0f); 
-        Gizmos.DrawRay(transform.position, transform.TransformDirection(rayVector).normalized * length);
+        float dist = GetDistance();
+        Gizmos.color = new Color(1.0f - (dist / (length/3.0f)), (dist / (length/3.0f)), 0.0f); 
+        Gizmos.DrawRay(transform.position, transform.TransformDirection(rayVector).normalized * dist);
+        Gizmos.DrawRay(transform.position + transform.right * 0.05f, transform.TransformDirection(rayVector).normalized * dist + transform.right * 0.05f);
+        Gizmos.DrawRay(transform.position +- transform.right * 0.05f, transform.TransformDirection(rayVector).normalized * dist - transform.right * 0.05f);
     }
 
     public float GetDistance() {

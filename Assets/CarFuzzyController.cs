@@ -14,6 +14,7 @@ namespace UnityStandardAssets.Vehicles.Car {
     public class CarFuzzyController : MonoBehaviour {
 
         private CarController m_Car;
+        bool displayGui;
 
         float memberLeft;
         float memberRight;
@@ -168,9 +169,12 @@ namespace UnityStandardAssets.Vehicles.Car {
 
             decimal carPosition = (decimal)fCarPosition;
 
-            memberLeft = (float)dangerousLeft.IsMember(carPosition);
-            memberRight = (float)dangerousRight.IsMember(carPosition);
-            memberCenter = (float)safe.IsMember(carPosition);
+            if (displayGui) {
+                memberLeft = (float)dangerousLeft.IsMember(carPosition);
+                memberRight = (float)dangerousRight.IsMember(carPosition);
+                memberCenter = (float)safe.IsMember(carPosition);
+            }
+
 
             Defuzzification result = new CenterOfGravity(relation, new Dictionary<IDimension, decimal>()
             {
@@ -188,13 +192,16 @@ namespace UnityStandardAssets.Vehicles.Car {
 
             decimal distance = (decimal)Mathf.Clamp(distanceToFrontBound, 0.0f, 150.0f);
 
-            memberDangerouslyClose = (float)dangerousClose.IsMember(distance);
-            memberClose = (float)close.IsMember(distance);
-            memberFar = (float)far.IsMember(distance);
+            if (displayGui) {
+                memberDangerouslyClose = (float)dangerousClose.IsMember(distance);
+                memberClose = (float)close.IsMember(distance);
+                memberFar = (float)far.IsMember(distance);
 
-            memberZeroSpeed = (float)zeroSpeed.IsMember((decimal)m_Car.CurrentSpeed);
-            memberLowSpeed = (float)lowSpeed.IsMember((decimal)m_Car.CurrentSpeed);
-            memberHighSpeed = (float)highSpeed.IsMember((decimal)m_Car.CurrentSpeed);
+                memberZeroSpeed = (float)zeroSpeed.IsMember((decimal)m_Car.CurrentSpeed);
+                memberLowSpeed = (float)lowSpeed.IsMember((decimal)m_Car.CurrentSpeed);
+                memberHighSpeed = (float)highSpeed.IsMember((decimal)m_Car.CurrentSpeed);
+            }
+
 
 
             /*
@@ -226,60 +233,67 @@ namespace UnityStandardAssets.Vehicles.Car {
 
         void OnGUI() {
 
-            GUIStyle style = new GUIStyle();
-            style.fontSize = 20;
-            style.normal.textColor = Color.white;
+            if (GUI.Button(new Rect(Screen.width - 100, 0, 100, 30), "DisplayParams")) {
+                displayGui = !displayGui;
+            }
+        
+            if (displayGui) {
+                GUIStyle style = new GUIStyle();
+                style.fontSize = 20;
+                style.normal.textColor = Color.white;
 
-            GUI.Label(new Rect(10, 40, 150, 20), "Distance to side bounds:", style);
+                GUI.Label(new Rect(10, 40, 150, 20), "Distance to side bounds:", style);
 
-            style.normal.textColor = new Color(1.0f - memberLeft, memberLeft, 0.0f);
-            GUI.Label(new Rect(10, 60, 150, 20), "LEFT - " + memberLeft, style);
+                style.normal.textColor = new Color(1.0f - memberLeft, memberLeft, 0.0f);
+                GUI.Label(new Rect(10, 60, 150, 20), "LEFT - " + memberLeft, style);
 
-            style.normal.textColor = new Color(1.0f - memberCenter, memberCenter, 0.0f);
-            GUI.Label(new Rect(10, 80, 150, 20), "CENTER - " + memberCenter, style);
+                style.normal.textColor = new Color(1.0f - memberCenter, memberCenter, 0.0f);
+                GUI.Label(new Rect(10, 80, 150, 20), "CENTER - " + memberCenter, style);
 
-            style.normal.textColor = new Color(1.0f - memberRight, memberRight, 0.0f);
-            GUI.Label(new Rect(10, 100, 150, 20), "RIGHT - " + memberRight, style);
-
-
-
-            style.normal.textColor = Color.white;
-            GUI.Label(new Rect(280, 40, 150, 20), "Distance to front bound:", style);
-
-            style.normal.textColor = new Color(1.0f - memberDangerouslyClose, memberDangerouslyClose, 0.0f);
-            GUI.Label(new Rect(280, 60, 150, 20), "VERY CLOSE - " + memberDangerouslyClose, style);
-
-            style.normal.textColor = new Color(1.0f - memberClose, memberClose, 0.0f);
-            GUI.Label(new Rect(280, 80, 150, 20), "CLOSE - " + memberClose, style);
-
-            style.normal.textColor = new Color(1.0f - memberFar, memberFar, 0.0f);
-            GUI.Label(new Rect(280, 100, 150, 20), "FAR - " + memberFar, style);
+                style.normal.textColor = new Color(1.0f - memberRight, memberRight, 0.0f);
+                GUI.Label(new Rect(10, 100, 150, 20), "RIGHT - " + memberRight, style);
 
 
 
+                style.normal.textColor = Color.white;
+                GUI.Label(new Rect(280, 40, 150, 20), "Distance to front bound:", style);
 
-            style.normal.textColor = Color.white;
-            GUI.Label(new Rect(540, 40, 150, 20), "Speedometer:", style);
+                style.normal.textColor = new Color(1.0f - memberDangerouslyClose, memberDangerouslyClose, 0.0f);
+                GUI.Label(new Rect(280, 60, 150, 20), "VERY CLOSE - " + memberDangerouslyClose, style);
 
-            style.normal.textColor = new Color(1.0f - memberZeroSpeed, memberZeroSpeed, 0.0f);
-            GUI.Label(new Rect(540, 60, 150, 20), "ZERO SPEED - " + memberDangerouslyClose, style);
+                style.normal.textColor = new Color(1.0f - memberClose, memberClose, 0.0f);
+                GUI.Label(new Rect(280, 80, 150, 20), "CLOSE - " + memberClose, style);
 
-            style.normal.textColor = new Color(1.0f - memberLowSpeed, memberLowSpeed, 0.0f);
-            GUI.Label(new Rect(540, 80, 150, 20), "LOW SPEED - " + memberLowSpeed, style);
-
-            style.normal.textColor = new Color(1.0f - memberHighSpeed, memberHighSpeed, 0.0f);
-            GUI.Label(new Rect(540, 100, 150, 20), "HIGH SPEED - " + memberHighSpeed, style);
+                style.normal.textColor = new Color(1.0f - memberFar, memberFar, 0.0f);
+                GUI.Label(new Rect(280, 100, 150, 20), "FAR - " + memberFar, style);
 
 
 
 
-            style.normal.textColor = new Color(crispSteeringWheel / 100.0f, 1.0f - crispSteeringWheel/100.0f, 0.0f);
-            string str = crispSteeringWheel < 0 ? "LEFT " + Mathf.Abs(crispSteeringWheel) : "RIGHT " + Mathf.Abs(crispSteeringWheel);
-            GUI.Label(new Rect(50, Screen.height - 50, 150, 20), "STEERING WHEEL - " + str + "%", style);
+                style.normal.textColor = Color.white;
+                GUI.Label(new Rect(540, 40, 150, 20), "Speedometer:", style);
 
-            style.normal.textColor = new Color(1.0f - Mathf.Abs(crispGas) / 100.0f, Mathf.Abs(crispGas) / 100.0f, 0.0f);
-            str = crispGas >= 0 ? "GO " + Mathf.Abs(crispGas) : "BRAKE " + Mathf.Abs(crispGas);
-            GUI.Label(new Rect(500, Screen.height - 50, 150, 20), "GAS - " + crispGas + "%", style);
+                style.normal.textColor = new Color(1.0f - memberZeroSpeed, memberZeroSpeed, 0.0f);
+                GUI.Label(new Rect(540, 60, 150, 20), "ZERO SPEED - " + memberDangerouslyClose, style);
+
+                style.normal.textColor = new Color(1.0f - memberLowSpeed, memberLowSpeed, 0.0f);
+                GUI.Label(new Rect(540, 80, 150, 20), "LOW SPEED - " + memberLowSpeed, style);
+
+                style.normal.textColor = new Color(1.0f - memberHighSpeed, memberHighSpeed, 0.0f);
+                GUI.Label(new Rect(540, 100, 150, 20), "HIGH SPEED - " + memberHighSpeed, style);
+
+
+
+
+                style.normal.textColor = new Color(crispSteeringWheel / 100.0f, 1.0f - crispSteeringWheel / 100.0f, 0.0f);
+                string str = crispSteeringWheel < 0 ? "LEFT " + Mathf.Abs(crispSteeringWheel) : "RIGHT " + Mathf.Abs(crispSteeringWheel);
+                GUI.Label(new Rect(50, Screen.height - 50, 150, 20), "STEERING WHEEL - " + str + "%", style);
+
+                style.normal.textColor = new Color(1.0f - Mathf.Abs(crispGas) / 100.0f, Mathf.Abs(crispGas) / 100.0f, 0.0f);
+                str = crispGas >= 0 ? "GO " + Mathf.Abs(crispGas) : "BRAKE " + Mathf.Abs(crispGas);
+                GUI.Label(new Rect(500, Screen.height - 50, 150, 20), "GAS - " + crispGas + "%", style);
+            }
+            
         }
     }
 }
